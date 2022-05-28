@@ -5,7 +5,7 @@ import NProgress from 'nprogress' // 引入一份进度条插件
 import 'nprogress/nprogress.css' // 引入进度条样式
 
 const whiteList = ['/login', '/404'] // 定义白名单  所有不受权限控制的页面
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   NProgress.start()
   //  首先判断有无token
   if (store.getters.token) {
@@ -14,6 +14,12 @@ router.beforeEach((to, from, next) => {
       //  表示去的是登录页
       next('/') // 跳到主页
     } else {
+      // 只有放过去的时候才获取用户资料
+      if (!store.getters.userId) {
+        // 没有用户资料才要获取
+        await store.dispatch('user/getUserInfo')
+        // 要等拿到用户资料再放行所以写await
+      }
       next() // 直接放行
     }
   } else {
