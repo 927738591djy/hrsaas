@@ -10,7 +10,7 @@
           :props="defaultProps"
           @node-click="handleNodeClick"
         >
-          <TreeTools slot-scope="{ data }" :tree-node="data" />
+          <tree-tools slot-scope="obj" :tree-node="obj.data" @delDepts="getDepartments" />
         </el-tree>
       </el-card>
     </div>
