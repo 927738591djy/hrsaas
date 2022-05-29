@@ -10,7 +10,7 @@
           :props="defaultProps"
           @node-click="handleNodeClick"
         >
-          <TreeTools slot-scope="{data}" :tree-node="data" />
+          <TreeTools slot-scope="{ data }" :tree-node="data" />
         </el-tree>
       </el-card>
     </div>
@@ -19,6 +19,8 @@
 
 <script>
 import TreeTools from '@/views/departments/components/tree-tools.vue'
+import { getDepartments } from '@/api/departments'
+import { tranListToTreeData } from '@/utils/index'
 
 export default {
   components: {
@@ -26,27 +28,26 @@ export default {
   },
   data() {
     return {
-      departs: [
-        {
-          name: '总裁办',
-          manager: '曹操',
-          children: [{ name: '董事会', manager: '曹丕' }]
-        },
-        { name: '行政部', manager: '刘备' },
-        { name: '人事部', manager: '孙权' }
-      ],
+      departs: [],
       defaultProps: {
         label: 'name' // 表示 从这个属性显示内容
       },
-      company: {
-        name: '江苏传智播客教育科技股份有限公司',
-        manager: '负责人'
-      }
+      company: {}
     }
+  },
+  created() {
+    this.getDepartments() // 调用自身的方法
   },
   methods: {
     handleNodeClick(data) {
       console.log(data)
+    },
+    async getDepartments() {
+      const result = await getDepartments()
+      this.company = { name: result.companyName, manager: '负责人' }
+      // this.departs = result.depts // 需要将其转化成树形结构
+      this.departs = tranListToTreeData(result.depts, '')
+      console.log(result)
     }
   }
 }
