@@ -1,4 +1,4 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
 const state = {
   token: getToken(), // 初始化vuex中的token就从缓存中获取
@@ -31,6 +31,7 @@ const actions = {
     // 现在有用户token
     // actions 修改state 必须通过mutations
     context.commit('setToken', result)
+    setTimeStamp()
   },
 
   async getUserInfo(context) {
@@ -38,8 +39,12 @@ const actions = {
     const baseInfo = await getUserDetailById(result.userId)
     context.commit('setUserInfo', { ...result, ...baseInfo }) // 将整个的个人信息设置到用户的vuex数据中
     return result // 这里为什么要返回 为后面埋下伏笔
+  },
+  // 登出的action
+  logout(context) {
+    context.commit('removeToken') // 也同时删除了缓存中的token
+    context.commit('removeUserInfo')
   }
-
 }
 export default {
   namespaced: true,
