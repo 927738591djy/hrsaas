@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
         <AddDept ref="addDept" :show-dialog.sync="showDialog" :tree-node="node" @addDepts="getDepartments" />
@@ -31,6 +31,7 @@ export default {
   data() {
     return {
       showDialog: false, // 显示窗体
+      loading: false, // 用来控制进度弹层的显示和隐藏
       node: null, // 接收子组件treetool传过来的treeNode当前部门信息
       departs: [],
       defaultProps: {
@@ -47,6 +48,7 @@ export default {
       console.log(data)
     },
     async getDepartments() {
+      this.loading = true
       const result = await getDepartments()
       // 在最根级的**`tree-tools`**组件中，由于treenode属性中没有id，id便是undefined，
       // 但是通过undefined进行等值判断是寻找不到对应的根节点的
@@ -54,7 +56,8 @@ export default {
       this.company = { name: result.companyName, manager: '负责人', id: '' }
       // this.departs = result.depts // 需要将其转化成树形结构
       this.departs = tranListToTreeData(result.depts, '')
-      console.log(result)
+      // console.log(result)
+      this.loading = false
     },
     addDepts(node) {
       this.showDialog = true
