@@ -9,6 +9,7 @@
                 icon="el-icon-plus"
                 size="small"
                 type="primary"
+                @click="showDialog = true"
               >新增角色</el-button>
             </el-row>
             <el-table border="" :data="list">
@@ -48,7 +49,7 @@
               />
             </el-row>
 
-            <el-dialog title="编辑弹层" :visible="showDialog">
+            <el-dialog title="编辑弹层" :visible="showDialog" @close="btnCancel">
               <el-form
                 ref="roleForm"
                 :model="roleForm"
@@ -128,7 +129,8 @@ import {
   getCompanyInfo,
   deleteRole,
   getRoleDetail,
-  updateRole
+  updateRole,
+  addRole
 } from '@/api/setting'
 import { mapGetters } from 'vuex'
 
@@ -193,15 +195,28 @@ export default {
       try {
         // 点击确定手动校验表单
         await this.$refs.roleForm.validate()
-        await updateRole(this.roleForm)
+        if (this.roleForm.id) {
+          // 编辑角色
+          await updateRole(this.roleForm)
+        } else {
+          // 新增角色
+          await addRole(this.roleForm)
+        }
         this.showDialog = false
+        this.$message('操作成功')
         this.getRoleList()
       } catch (error) {
         console.log(error)
       }
     },
     btnCancel() {
-
+      this.showDialog = false
+      this.roleForm = {
+        name: '',
+        description: ''
+      }
+      // 移除校验
+      this.$refs.roleForm.resetFields()
     }
   }
 }
