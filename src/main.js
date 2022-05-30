@@ -15,6 +15,7 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 import * as directives from '@/directives'
+import Component from '@/components'
 
 // 注册自定义指令
 // 遍历所有的导出的指令对象 完成自定义全局注册
@@ -38,6 +39,8 @@ Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+
+Vue.use(Component) // 注册自己的插件
 
 new Vue({
   el: '#app',
