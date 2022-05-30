@@ -63,7 +63,8 @@
 import {
   getDepartments,
   addDepartments,
-  getDepartDetail
+  getDepartDetail,
+  updateDepartments
 } from '@/api/departments'
 import { getEmployeeSimplet } from '@/api/employee'
 
@@ -157,7 +158,14 @@ export default {
     btnOk() {
       this.$refs.deptForm.validate(async(isOk) => {
         if (isOk) {
-          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          if (this.formData.id) {
+            // 有id就是编辑模式
+            await updateDepartments(this.formData)
+          } else {
+            // 新增模式
+            await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          }
+          // 两种模式都去触发父亲自定义事件重新获取组织架构信息
           this.$emit('addDepts')
           this.$emit('update:showDialog', false)
         }
