@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
-        <AddDept :show-dialog="showDialog" :tree-node="node" @addDepts="getDepartments" />
+        <AddDept :show-dialog.sync="showDialog" :tree-node="node" @addDepts="getDepartments" />
         <TreeTools :tree-node="company" :is-root="true" @addDepts="addDepts" />
 
         <!-- 树形组织结构 -->
