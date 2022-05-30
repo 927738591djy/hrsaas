@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
-        <AddDept :show-dialog="showDialog" />
+        <AddDept :show-dialog="showDialog" :tree-node="node" />
         <TreeTools :tree-node="company" :is-root="true" @addDepts="addDepts" />
 
         <!-- 树形组织结构 -->
@@ -48,7 +48,10 @@ export default {
     },
     async getDepartments() {
       const result = await getDepartments()
-      this.company = { name: result.companyName, manager: '负责人' }
+      // 在最根级的**`tree-tools`**组件中，由于treenode属性中没有id，id便是undefined，
+      // 但是通过undefined进行等值判断是寻找不到对应的根节点的
+      // ， 所以在传值时，我们将id属性设置为 ''
+      this.company = { name: result.companyName, manager: '负责人', id: '' }
       // this.departs = result.depts // 需要将其转化成树形结构
       this.departs = tranListToTreeData(result.depts, '')
       console.log(result)
