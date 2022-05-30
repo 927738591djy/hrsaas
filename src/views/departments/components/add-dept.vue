@@ -82,16 +82,31 @@ export default {
   data() {
     const checkNameRepeat = async(rule, value, callback) => {
       const { depts } = await getDepartments()
-      const isRepeat = depts
-        .filter((item) => item.pid === this.treeNode.id)
-        .some((item) => item.name === value)
+      let isRepeat = true
+      if (this.formData.id) {
+        // 编辑 张三 => 校验规则 除了我之外 同级部门下 不能有叫张三的
+        isRepeat = depts.filter(item => item.pid === this.formData.pid && item.id !== this.formData.id).some(item => item.name === value)
+        // 编辑模式
+      } else {
+        // 新增模式
+        isRepeat = depts
+          .filter((item) => item.pid === this.treeNode.id)
+          .some((item) => item.name === value)
+      }
       isRepeat
         ? callback(new Error(`该部门下添加${value}的同名子部门`))
         : callback()
     }
     const checkCodeRepeat = async(rule, value, callback) => {
       const { depts } = await getDepartments()
-      const isRepeat = depts.some((item) => item.code === value && value)
+      let isRepeat = true
+      if (this.formData.id) {
+        // 编辑模式  因为编辑模式下 不能算自己
+        isRepeat = depts.filter(item => item.id !== this.formData.id).some((item) => item.code === value && value)
+      } else {
+        isRepeat = depts.some((item) => item.code === value && value)
+      }
+
       // / 这里加一个 value不为空 因为我们的部门有可能没有code
       isRepeat
         ? callback(new Error(`组织架构中已经有部门使用${value}编码`))
@@ -128,6 +143,7 @@ export default {
             message: '部门编码字符长度为1-50之间'
           },
           {
+            trigger: 'blur',
             validator: checkCodeRepeat
           }
         ],
