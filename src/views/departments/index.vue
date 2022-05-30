@@ -2,7 +2,8 @@
   <div class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
-        <TreeTools :tree-node="company" :is-root="true" />
+        <AddDept :show-dialog="showDialog" />
+        <TreeTools :tree-node="company" :is-root="true" @addDepts="addDepts" />
 
         <!-- 树形组织结构 -->
         <el-tree
@@ -10,7 +11,7 @@
           :props="defaultProps"
           @node-click="handleNodeClick"
         >
-          <tree-tools slot-scope="obj" :tree-node="obj.data" @delDepts="getDepartments" />
+          <tree-tools slot-scope="obj" :tree-node="obj.data" @delDepts="getDepartments" @addDepts="addDepts" />
         </el-tree>
       </el-card>
     </div>
@@ -21,13 +22,16 @@
 import TreeTools from '@/views/departments/components/tree-tools.vue'
 import { getDepartments } from '@/api/departments'
 import { tranListToTreeData } from '@/utils/index'
+import AddDept from './components/add-dept' // 引入新增部门组件
 
 export default {
   components: {
-    TreeTools
+    TreeTools, AddDept
   },
   data() {
     return {
+      showDialog: false, // 显示窗体
+      node: null, // 接收子组件treetool传过来的treeNode当前部门信息
       departs: [],
       defaultProps: {
         label: 'name' // 表示 从这个属性显示内容
@@ -48,7 +52,12 @@ export default {
       // this.departs = result.depts // 需要将其转化成树形结构
       this.departs = tranListToTreeData(result.depts, '')
       console.log(result)
+    },
+    addDepts(node) {
+      this.showDialog = true
+      this.node = node
     }
+
   }
 }
 </script>

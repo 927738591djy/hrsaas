@@ -14,3 +14,15 @@ export function delDepartments(id) {
     method: 'DELETE'
   })
 }
+
+/**
+ *  新增部门接口
+ *
+ * ****/
+export function addDepartments(data) {
+  return request({
+    url: '/company/department',
+    method: 'post',
+    data
+  })
+}
