@@ -16,9 +16,16 @@
               <el-table-column prop="name" label="角色名称" width="140" />
               <el-table-column prop="description" label="描述" />
               <el-table-column prop="companyId" label="操作">
-                <el-button size="small" type="success">分配权限</el-button>
-                <el-button size="small" type="primary">编辑</el-button>
-                <el-button size="small" type="danger">删除</el-button>
+                <!-- 作用域插槽 -->
+                <template slot-scope="{ row }">
+                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button
+                    size="small"
+                    type="danger"
+                    @click="deleteRole(row.id)"
+                  >删除</el-button>
+                </template>
               </el-table-column>
             </el-table>
             <!-- 分页组件 -->
@@ -28,7 +35,13 @@
               align="middle"
               style="height: 60px"
             >
-              <el-pagination :page-size="page.pagesize" :total="page.total" layout="prev, pager, next" @current-page="page.page" @current-change="changePage" />
+              <el-pagination
+                :page-size="page.pagesize"
+                :total="page.total"
+                layout="prev, pager, next"
+                @current-page="page.page"
+                @current-change="changePage"
+              />
             </el-row>
           </el-tab-pane>
 
@@ -41,19 +54,35 @@
             />
             <el-form label-width="120px" style="margin-top: 50px">
               <el-form-item label="公司名称">
-                <el-input v-model="formData.name" disabled style="width: 400px" />
+                <el-input
+                  v-model="formData.name"
+                  disabled
+                  style="width: 400px"
+                />
               </el-form-item>
 
               <el-form-item label="公司地址">
-                <el-input v-model="formData.companyAddress" disabled style="width: 400px" />
+                <el-input
+                  v-model="formData.companyAddress"
+                  disabled
+                  style="width: 400px"
+                />
               </el-form-item>
 
               <el-form-item label="邮箱">
-                <el-input v-model="formData.mailbox" disabled style="width: 400px" />
+                <el-input
+                  v-model="formData.mailbox"
+                  disabled
+                  style="width: 400px"
+                />
               </el-form-item>
 
               <el-form-item label="备注">
-                <el-input v-model="formData.remarks" disabled style="width: 400px" />
+                <el-input
+                  v-model="formData.remarks"
+                  disabled
+                  style="width: 400px"
+                />
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -64,7 +93,7 @@
 </template>
 
 <script>
-import { getRoleList, getCompanyInfo } from '@/api/setting'
+import { getRoleList, getCompanyInfo, deleteRole } from '@/api/setting'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -99,6 +128,16 @@ export default {
     changePage(newPage) {
       this.page.page = newPage
       this.getRoleList()
+    },
+    async deleteRole(id) {
+      try {
+        await this.$confirm('确认删除该角色吗')
+        await deleteRole(id)
+        this.getRoleList() // 重新加载数据
+        this.$message('删除角色成功')
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 }
