@@ -19,7 +19,7 @@
                 <!-- 作用域插槽 -->
                 <template slot-scope="{ row }">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button size="small" type="primary" @click="editRole(row.id)">编辑</el-button>
                   <el-button
                     size="small"
                     type="danger"
@@ -43,6 +43,23 @@
                 @current-change="changePage"
               />
             </el-row>
+
+            <el-dialog title="编辑弹层" :visible="showDialog">
+              <el-form :model="roleForm" :rules="rules" label-width="120px">
+                <el-form-item prop="name" label="角色名称">
+                  <el-input v-model="roleForm.name" />
+                </el-form-item>
+                <el-form-item label="角色描述">
+                  <el-input v-model="roleForm.description" />
+                </el-form-item>
+              </el-form>
+              <el-row slot="footer" type="flex" justify="center">
+                <el-col :span="6">
+                  <el-button size="small">取消</el-button>
+                  <el-button size="small" type="primary">确定</el-button>
+                </el-col>
+              </el-row>
+            </el-dialog>
           </el-tab-pane>
 
           <el-tab-pane label="公司信息">
@@ -106,7 +123,16 @@ export default {
         pagesize: 10,
         total: 0 // 记录总数
       },
-      formData: {} // 接收公司信息
+      formData: {}, // 接收公司信息
+      roleForm: {
+        name: '',
+        description: ''
+      }, // 接收角色细节信息
+      rules: {
+        name: [{ required: true, message: '角色名不能为空', trigger: 'blur' }]
+      },
+      showDialog: false
+      // 专门接收新增或者编辑的编辑的表单数据
     }
   },
   computed: {
@@ -138,6 +164,9 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    editRole(id) {
+      this.showDialog = true
     }
   }
 }
