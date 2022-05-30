@@ -11,19 +11,24 @@
                 type="primary"
               >新增角色</el-button>
             </el-row>
-            <el-table border="">
-              <el-table-column label="序号" width="120" />
-              <el-table-column label="角色名称" width="140" />
-              <el-table-column label="描述" />
-              <el-table-column label="操作">
+            <el-table border="" :data="list">
+              <el-table-column type="index" label="序号" width="120" />
+              <el-table-column prop="name" label="角色名称" width="140" />
+              <el-table-column prop="description" label="描述" />
+              <el-table-column prop="companyId" label="操作">
                 <el-button size="small" type="success">分配权限</el-button>
                 <el-button size="small" type="primary">编辑</el-button>
                 <el-button size="small" type="danger">删除</el-button>
               </el-table-column>
             </el-table>
             <!-- 分页组件 -->
-            <el-row type="flex" justify="center" align="middle" style="height:60px">
-              <el-pagination layout="prev, pager, next" />
+            <el-row
+              type="flex"
+              justify="center"
+              align="middle"
+              style="height: 60px"
+            >
+              <el-pagination :page-size="page.pagesize" :total="page.total" layout="prev, pager, next" @current-page="page.page" @current-change="changePage" />
             </el-row>
           </el-tab-pane>
 
@@ -34,21 +39,21 @@
               show-icon
               :closable="false"
             />
-            <el-form label-width="120px" style="margin-top:50px">
+            <el-form label-width="120px" style="margin-top: 50px">
               <el-form-item label="公司名称">
-                <el-input disabled style="width:400px" />
+                <el-input disabled style="width: 400px" />
               </el-form-item>
 
               <el-form-item label="公司地址">
-                <el-input disabled style="width:400px" />
+                <el-input disabled style="width: 400px" />
               </el-form-item>
 
               <el-form-item label="邮箱">
-                <el-input disabled style="width:400px" />
+                <el-input disabled style="width: 400px" />
               </el-form-item>
 
               <el-form-item label="备注">
-                <el-input disabled style="width:400px" />
+                <el-input disabled style="width: 400px" />
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -59,7 +64,35 @@
 </template>
 
 <script>
-export default {}
+import { getRoleList } from '@/api/setting'
+
+export default {
+  data() {
+    return {
+      list: [],
+      page: {
+        // 放置页码及相关数据
+        page: 1,
+        pagesize: 10,
+        total: 0 // 记录总数
+      }
+    }
+  },
+  created() {
+    this.getRoleList()
+  },
+  methods: {
+    async getRoleList() {
+      const { rows, total } = await getRoleList(this.page)
+      this.page.total = total
+      this.list = rows
+    },
+    changePage(newPage) {
+      this.page.page = newPage
+      this.getRoleList()
+    }
+  }
+}
 </script>
 
 <style>
