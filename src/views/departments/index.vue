@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="app-container">
       <el-card class="tree-card">
-        <AddDept :show-dialog.sync="showDialog" :tree-node="node" @addDepts="getDepartments" />
+        <AddDept ref="addDept" :show-dialog.sync="showDialog" :tree-node="node" @addDepts="getDepartments" />
         <TreeTools :tree-node="company" :is-root="true" @addDepts="addDepts" />
 
         <!-- 树形组织结构 -->
@@ -11,7 +11,7 @@
           :props="defaultProps"
           @node-click="handleNodeClick"
         >
-          <tree-tools slot-scope="obj" :tree-node="obj.data" @delDepts="getDepartments" @addDepts="addDepts" />
+          <tree-tools slot-scope="obj" :tree-node="obj.data" @delDepts="getDepartments" @addDepts="addDepts" @editDepts="editDepts" />
         </el-tree>
       </el-card>
     </div>
@@ -59,6 +59,13 @@ export default {
     addDepts(node) {
       this.showDialog = true
       this.node = node
+    },
+    editDepts(node) {
+      this.showDialog = true
+      this.node = node
+      // 我们需要在这个位置 调用子组件的方法
+      // 父组件 调用子组件的方法
+      this.$refs.addDept.getDepartDetail(node.id) // 直接调用子组件中的方法 传入一个id
     }
 
   }
