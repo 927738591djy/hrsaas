@@ -23,7 +23,15 @@
           v-model="formData.manager"
           style="width: 80%"
           placeholder="请选择"
-        />
+          @focus="getEmployeeSimplet"
+        >
+          <el-option
+            v-for="item in peoples"
+            :key="item.id"
+            :label="item.username"
+            :value="item.username"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="部门介绍" prop="introduce">
         <el-input
@@ -48,6 +56,7 @@
 
 <script>
 import { getDepartments } from '@/api/departments'
+import { getEmployeeSimplet } from '@/api/employee'
 
 export default {
   props: {
@@ -79,6 +88,7 @@ export default {
         : callback()
     }
     return {
+      peoples: [], // 定义一个员工列表数组
       formData: {
         name: '',
         code: '',
@@ -124,6 +134,11 @@ export default {
           }
         ]
       }
+    }
+  },
+  methods: {
+    async getEmployeeSimplet() {
+      this.peoples = await getEmployeeSimplet()
     }
   }
 }
