@@ -6,7 +6,7 @@
         <template slot="after">
           <el-button size="small" type="warning">导入</el-button>
           <el-button size="small" type="danger">导出</el-button>
-          <el-button size="small" type="primary">新增员工</el-button>
+          <el-button size="small" type="primary" @click="showDialog = true">新增员工</el-button>
         </template>
       </PageTools>
       <el-table border="" :data="list">
@@ -57,14 +57,20 @@
         />
       </el-row>
     </div>
+    <!-- 放置新增组件 -->
+    <AddDemployee :show-dialog.sync="showDialog" />
   </div>
 </template>
 
 <script>
 import { getEmployeeList, delEmployee } from '@/api/employee'
 import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
+import AddDemployee from './components/add-employee'
 
 export default {
+  components: {
+    AddDemployee
+  },
   data() {
     return {
       list: [],
@@ -73,7 +79,8 @@ export default {
         size: 10,
         total: 0
       },
-      loading: false
+      loading: false,
+      showDialog: false // 新增员工弹出层
     }
   },
   created() {
