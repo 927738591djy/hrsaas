@@ -34,7 +34,9 @@
             <component :is="UserComponent" />
             <!-- 动态组件可以切换组件 is后面是变量，变量值要放组件名 -->
           </el-tab-pane>
-          <el-tab-pane label="岗位信息" />
+          <el-tab-pane label="岗位信息">
+            <component :is="JonComponent" />
+          </el-tab-pane>
         </el-tabs>
       </el-card>
     </div>
@@ -45,13 +47,17 @@
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employee'
 import UserInfo from '@/views/employees/components/user-info.vue'
+import JobInfo from '@/views/employees/components/job-info.vue'
 
 export default {
   components: {
-    UserInfo
+    UserInfo,
+    JobInfo
   },
   data() {
     return {
+      // 定义切换的动态组件变量
+      JonComponent: 'JobInfo',
       UserComponent: 'UserInfo',
       // 定义一个用户id通过路由的parmas去获取，因为这个页面我们有用户的id
       userId: this.$route.params.id,
