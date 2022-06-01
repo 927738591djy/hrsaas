@@ -31,6 +31,7 @@
           :formatter="formatEmployment"
           sortable=""
         />
+        <el-table-column label="手机号" prop="mobile" sortable="" />
         <el-table-column label="部门" prop="departmentName" sortable="" />
         <el-table-column label="入职时间" prop="timeOfEntry" sortable="">
           <template slot-scope="{ row }">
