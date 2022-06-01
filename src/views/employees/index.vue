@@ -4,9 +4,21 @@
       <PageTools :show-before="true">
         <span slot="before">共{{ page.total }}条记录</span>
         <template slot="after">
-          <el-button size="small" type="warning" @click="$router.push('/import')">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
-          <el-button size="small" type="primary" @click="showDialog = true">新增员工</el-button>
+          <el-button
+            size="small"
+            type="warning"
+            @click="$router.push('/import')"
+          >导入</el-button>
+          <el-button
+            size="small"
+            type="danger"
+            @click="exportData"
+          >导出</el-button>
+          <el-button
+            size="small"
+            type="primary"
+            @click="showDialog = true"
+          >新增员工</el-button>
         </template>
       </PageTools>
       <el-table border="" :data="list">
@@ -66,6 +78,7 @@
 import { getEmployeeList, delEmployee } from '@/api/employee'
 import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
 import AddDemployee from './components/add-employee'
+import { formatDate } from '@/filters'
 
 export default {
   components: {
@@ -115,6 +128,63 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    // 导出excel
+    exportData() {
+      // 因为数据中的key是英文，想要导出的表头是中文的话，需要将中文和英文做对应
+      const headers = {
+        姓名: 'username',
+        手机号: 'mobile',
+        入职日期: 'timeOfEntry',
+        聘用形式: 'formOfEmployment',
+        转正日期: 'correctionTime',
+        工号: 'workNumber',
+        部门: 'departmentName'
+      }
+      // 懒加载点击了才加载这个文件
+      import('@/vendor/Export2Excel').then(async(excel) => {
+        // 现在没有一个接口可以查到所有员工数据
+        // 我们就利用原先接口
+        const { rows } = await getEmployeeList({
+          page: 1,
+          size: this.page.total
+        })
+        const data = this.formatJson(headers, rows) // 返回的data就是要导出的data
+        const multiHeader = [['姓名', '主要信息', '', '', '', '', '部门']]
+        const merges = ['A1:A2', 'B1:F1', 'G1:G2']
+        // 导出excel
+        excel.export_json_to_excel({
+          header: Object.keys(headers),
+          data,
+          filename: '员工工资表',
+          // bookType: 'txt'
+          multiHeader,
+          merges
+        })
+        //     // excel是引入文件的导出的对象
+        //     excel.export_json_to_excel({
+        //       header: ['姓名', '工资'],
+        //       data: [],
+        //       filename: '员工工资表',
+        //       bookType: 'txt'
+        //     })
+      })
+    },
+    // 处理所有员工共的数据让导出可以用的方法
+    formatJson(headers, rows) {
+      return rows.map((item) => {
+        return Object.keys(headers).map((key) => {
+          // 需要判断字段
+          if (headers[key] === 'timeOfEntry' || headers[key] === 'correctionTime') {
+            // 格式化日期
+            return formatDate(item[headers[key]])
+          } else if (headers[key] === 'formOfEmployment') {
+            const obj = EmployeeEnum.hireType.find(obj => obj.id === item[headers[key]])
+            return obj ? obj.value : '未知'
+          }
+          return item[headers[key]]
+        })
+      })
     }
   }
 }
