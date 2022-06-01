@@ -26,7 +26,14 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="个人详情" />
+          <el-tab-pane label="个人详情">
+            <!-- <UserInfo /> -->
+            <!-- vue.js中内置了一个组件components泛义组件可以是任何组件 -->
+            <!-- 在以上代码中，我们使用了动态组件**component**，它通过 **`is`**属性来绑定需要显示在该位置的组件
+            ，is属性可以直接为**`注册组件`**的组件名称即可 -->
+            <component :is="UserComponent" />
+            <!-- 动态组件可以切换组件 is后面是变量，变量值要放组件名 -->
+          </el-tab-pane>
           <el-tab-pane label="岗位信息" />
         </el-tabs>
       </el-card>
@@ -37,9 +44,15 @@
 <script>
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employee'
+import UserInfo from '@/views/employees/components/user-info.vue'
+
 export default {
+  components: {
+    UserInfo
+  },
   data() {
     return {
+      UserComponent: 'UserInfo',
       // 定义一个用户id通过路由的parmas去获取，因为这个页面我们有用户的id
       userId: this.$route.params.id,
       userInfo: {
