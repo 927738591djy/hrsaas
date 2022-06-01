@@ -83,7 +83,11 @@ export default {
   methods: {
     // 封装一个方法显示用户的名字和密码
     async getUserDetailById() {
-      this.userInfo = await getUserDetailById(this.userId)
+      try {
+        this.userInfo = await getUserDetailById(this.userId)
+      } catch (error) {
+        console.log(error)
+      }
     },
     // 保存更新的用户信息的方法
     saveUser() {

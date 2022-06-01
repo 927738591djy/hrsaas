@@ -284,6 +284,8 @@
 
 <script>
 import EmployeeEnum from '@/api/constant/employees'
+import { getUserDetailById } from '@/api/user'
+import { saveUserDetailById, getPersonalDetail, updatePersonal } from '@/api/employee'
 
 export default {
   data() {
@@ -356,11 +358,25 @@ export default {
       }
     }
   },
+  created() {
+    this.getUserDetailById()
+    this.getPersonalDetail()
+  },
   methods: {
-    saveUser() {
-
+    async getUserDetailById() {
+      this.userInfo = await getUserDetailById(this.userId)
     },
-    savePersonal() {}
+    async saveUser() {
+      await saveUserDetailById(this.userInfo)
+      this.$message.success('保存用户基本信息成功')
+    },
+    async getPersonalDetail() {
+      this.formData = await getPersonalDetail(this.userId)
+    },
+    async savePersonal() {
+      await updatePersonal({ ...this.formData, id: this.userId })
+      this.$message.success('保存用户基础信息成功')
+    }
   }
 }
 </script>
