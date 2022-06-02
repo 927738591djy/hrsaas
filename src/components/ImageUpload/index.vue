@@ -10,7 +10,9 @@
       :on-remove="handleRemove"
       :on-change="changeFile"
       :before-upload="beforeUpload"
+      :http-request="upload"
     >
+      <!-- http-request可以覆盖默认上传行为，自定义上传 -->
       <!-- action是图片上传地址， -->
       <!-- file-list是上传的文件列表。可以绑定到上传组件上，让上传组件显示 -->
       <!-- :on-remove是文件列表移除时候的钩子 -->
@@ -25,6 +27,15 @@
 </template>
 
 <script>
+import COS from 'cos-js-sdk-v5' // 引入腾讯云cos包
+// 实例化cos对象，需要secretid和secretkey两个参数
+
+const cos = new COS({
+  // 要用自己的secre才能访问自己的存储桶
+  SecretId: 'AKIDQfeNp0vZw2qOfeMn69vRgdJirjJcePs4', // 身份识别id
+  SecretKey: 'xdKktmOjna6KHxMUKtCEzTheKiqhGYZJ' // 身份密钥
+})
+
 export default {
   data() {
     return {
@@ -77,6 +88,25 @@ export default {
         return false
       }
       return true // 最后一定要return一个true,不然以为你return的是undefined
+    },
+    // 这里进行上传操作
+    upload(params) {
+      // params.file可以拿到我们要上传的那个文件
+      if (params.file) {
+        // 如果params.file文件存在就要执行上传操作
+        cos.putObject({
+          Bucket: 'liuyixiedaima-1312276636', // 存储桶
+          Region: 'ap-shanghai', // 地域
+          Key: params.file.name, // 文件名
+          Body: params.file, // 要上传的文件对象
+          StorageClass: 'STANDARD' // 上传的模式类型 直接默认 标准模式即可
+          // 上传到腾讯云 =》 哪个存储桶 哪个地域的存储桶 文件  格式  名称 回调
+        }, function(err, data) {
+          console.log(err || data)
+        })
+        // cos第二个参数是个回调函数,成功会返回数据,生成了本地文件的在线地址
+        // 返回数据为{statusCode: 200, headers: {…}, Location: 'liuyixiedaima-1312276636.cos.ap-shanghai.myqcloud.com/8abb5fbc7404ae1dc18ff6116f205ba0.jpeg', ETag: '"a6cff21856850bac861e17108e0336c6"', RequestId: 'NjI5ODMyM2FfMzYyNzY5NjRfMTNlNDZfMTkzMWU2Yg=='}
+      }
     }
   }
 }
