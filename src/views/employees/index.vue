@@ -24,6 +24,12 @@
       <el-table border="" :data="list">
         <el-table-column type="index" label="序号" sortable="" />
         <el-table-column label="姓名" prop="username" sortable="" />
+        <el-table-column label="头像" sortable="" align="center">
+          <template slot-scope="{row}">
+            <img v-imagerror="require('@/assets/common/bigUserHeader.png')" :src="row.staffPhoto" alt="" style="border-radius: 50%; width: 100px; height: 100px; padding: 10px">
+          </template>
+
+        </el-table-column>
         <el-table-column label="工号" prop="workNumber" sortable="" />
         <el-table-column
           label="聘用形式"
@@ -176,11 +182,16 @@ export default {
       return rows.map((item) => {
         return Object.keys(headers).map((key) => {
           // 需要判断字段
-          if (headers[key] === 'timeOfEntry' || headers[key] === 'correctionTime') {
+          if (
+            headers[key] === 'timeOfEntry' ||
+            headers[key] === 'correctionTime'
+          ) {
             // 格式化日期
             return formatDate(item[headers[key]])
           } else if (headers[key] === 'formOfEmployment') {
-            const obj = EmployeeEnum.hireType.find(obj => obj.id === item[headers[key]])
+            const obj = EmployeeEnum.hireType.find(
+              (obj) => obj.id === item[headers[key]]
+            )
             return obj ? obj.value : '未知'
           }
           return item[headers[key]]
