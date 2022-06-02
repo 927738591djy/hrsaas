@@ -1,111 +1,133 @@
 <template>
+  <!-- 上传组件 -->
   <div>
+    <!-- :class="{ class名称：布尔值 }" -->
+    <!-- el-upload之所以能够显示图片 是因为 fileList中有值 -->
     <el-upload
       list-type="picture-card"
-      :limit="1"
-      action="#"
-      :on-preview="preview"
       :file-list="fileList"
-      :class="{disabled:fileComputed}"
+      :on-preview="preview"
       :on-remove="handleRemove"
       :on-change="changeFile"
       :before-upload="beforeUpload"
       :http-request="upload"
+      action="#"
+      :class="{disabled: fileComputed}"
     >
-      <!-- http-request可以覆盖默认上传行为，自定义上传 -->
-      <!-- action是图片上传地址， -->
-      <!-- file-list是上传的文件列表。可以绑定到上传组件上，让上传组件显示 -->
-      <!-- :on-remove是文件列表移除时候的钩子 -->
-      <!-- :on-change是文件状态改变时候的钩子 -->
       <i class="el-icon-plus" />
     </el-upload>
+    <el-progress v-if="showPercent" :percentage="percent" style="width: 180px" />
 
+    <!-- 预览图片 -->
     <el-dialog :visible.sync="showDialog" title="图片预览">
       <img :src="imgUrl" alt="" style="width:100%">
     </el-dialog>
   </div>
+
 </template>
 
 <script>
-import COS from 'cos-js-sdk-v5' // 引入腾讯云cos包
-// 实例化cos对象，需要secretid和secretkey两个参数
-
+import COS from 'cos-js-sdk-v5'
 const cos = new COS({
-  // 要用自己的secre才能访问自己的存储桶
-  SecretId: 'AKIDQfeNp0vZw2qOfeMn69vRgdJirjJcePs4', // 身份识别id
+  SecretId: 'AKIDQfeNp0vZw2qOfeMn69vRgdJirjJcePs4', // 身份识别 ID
   SecretKey: 'xdKktmOjna6KHxMUKtCEzTheKiqhGYZJ' // 身份密钥
 })
-
 export default {
+  props: {
+    limit: {
+      type: Number,
+      default: 1
+    }
+  },
   data() {
     return {
+      showPercent: false, // 控制进度条的显示和隐藏
+      percent: 0, // 当前的进度
+      showDialog: false, // 默认隐藏
       imgUrl: '',
-      showDialog: false,
-      fileList: [{ url: 'https://img2.baidu.com/it/u=2637130172,271030761&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500' }]
+      fileList: []
     }
   },
   computed: {
-    //   要根据上传数量控制加号显示和隐藏
-    // 设计一个计算属性，判断是否已经上传完了一张
+    // 只要该计算属性为true 就表示 我们需要隐藏上传按钮
     fileComputed() {
-      return this.fileList.length === 1 // 等于1就是上传完了一张了
+      return this.fileList.length === this.limit
     }
   },
   methods: {
-    //   点击预览事件
     preview(file) {
-      console.log(file)
       this.imgUrl = file.url
       this.showDialog = true
     },
-    // 文件列表移除时候执行的方法
-    handleRemove(file, fileList) {
-      // file是要删除的文件，fileList是删除过之后的文件
-      this.fileList = fileList
+    // file就是要删除的file
+    handleRemove(file) {
+      // 根据file中uid将当前的fileList中的数据进行移除
+      this.fileList = this.fileList.filter(item => item.uid !== file.uid)
+      // filter方法会得到一个新的数组
     },
-    // 文件状态改变的方法
+    // 不能够一味 的进行push 因为该函数会被多次调用 fileList其实就是当前最新的文件列表
     changeFile(file, fileList) {
-      // 不能用push,这个钩子会执行两次
-      // file是当前的文件，fileList是最新的文件
+      // this.fileList = [...fileList]
       this.fileList = fileList.map(item => item)
-    //   现在还没有上传成功，第二次的fileList还是没数据，我们的action是#
     },
-    // 文件上传成功之前的钩子
+    // 上传之前检查
     beforeUpload(file) {
-      // file是一个包含文件的大小类型等的对象，
-      // 先检查文件类型
+    //   console.log(file)
+      // 要开始做文件上传的检查了
+      // 文件类型 文件大小
       const types = ['image/jpeg', 'image/gif', 'image/bmp', 'image/png']
-      // 看typs包含我们file里面的类型吗
-      if (!types.some(item => item === file.type)) {
+      if (!types.includes(file.type)) {
         this.$message.error('上传图片只能是 JPG、GIF、BMP、PNG 格式!')
-        return false // 上传终止
-      }
-      // 再检查文件大小 1M = 1024kb 1kb = 1024b
-      // file.size单位是b
-      const maxSize = 5 * 1024 * 1024
-      if (file.size > maxSize) {
-        this.$message.error('上传的文件大小不能超过5M')
         return false
       }
-      return true // 最后一定要return一个true,不然以为你return的是undefined
+      //   文件大小
+      const maxSize = 25 * 1024 * 1024
+      if (maxSize < file.size) {
+        this.$message.error('图片最大的大小为5M')
+        return false
+      }
+      return true // 要返回true
     },
-    // 这里进行上传操作
+    // 上传到腾讯云
+    // 自定义上传动作
     upload(params) {
-      // params.file可以拿到我们要上传的那个文件
+      // params中的file就是要上传的图片文件
+    //   console.log(params.file)
       if (params.file) {
-        // 如果params.file文件存在就要执行上传操作
+        this.showPercent = true // 显示进度条
+        //   上传对象到腾讯云
         cos.putObject({
-          Bucket: 'liuyixiedaima-1312276636', // 存储桶
-          Region: 'ap-shanghai', // 地域
-          Key: params.file.name, // 文件名
-          Body: params.file, // 要上传的文件对象
-          StorageClass: 'STANDARD' // 上传的模式类型 直接默认 标准模式即可
-          // 上传到腾讯云 =》 哪个存储桶 哪个地域的存储桶 文件  格式  名称 回调
-        }, function(err, data) {
-          console.log(err || data)
+          Bucket: 'liuyixiedaima-1312276636', /* 每个人的存储桶名称 */
+          Region: 'ap-shanghai', /* 存储桶所在地域，必须字段 */
+          Key: params.file.name, /* 文件名称 */
+          StorageClass: 'STANDARD', // 固定值
+          Body: params.file, // 上传文件对象
+          onProgress: (progressData) => {
+            // console.log(progressData.percent * 100)
+            this.percent = progressData.percent * 100
+          }
+        }, (err, data) => {
+          console.log(err)
+          if (data.statusCode === 200 && data.Location) {
+            //   认为此时上传成功
+            // 需要知道当前的这个地址是谁的url地址
+          //  params.file.uid  => 当前上传文件的标识  如果找到了一一样的uid 就表示他们是一张图片
+            console.log(this.fileList)
+            // 这样相当于将原来的旧本地地址换成了新地址
+            this.fileList = this.fileList.map(item => {
+              // 将本地的地址替换成线上已经放在腾讯云之后的地址
+              if (item.uid === params.file.uid) {
+                // upload 为true的意思是 表示这张图片 已经上传过了 已经不是本地图片了
+                return { url: 'http://' + data.Location, upload: true }
+              }
+              return item
+            })
+            setTimeout(() => {
+              this.showPercent = false // 关闭进度条
+              this.percent = 0 // 将进度归0
+            }, 2000)
+          }
         })
-        // cos第二个参数是个回调函数,成功会返回数据,生成了本地文件的在线地址
-        // 返回数据为{statusCode: 200, headers: {…}, Location: 'liuyixiedaima-1312276636.cos.ap-shanghai.myqcloud.com/8abb5fbc7404ae1dc18ff6116f205ba0.jpeg', ETag: '"a6cff21856850bac861e17108e0336c6"', RequestId: 'NjI5ODMyM2FfMzYyNzY5NjRfMTNlNDZfMTkzMWU2Yg=='}
       }
     }
   }
@@ -113,7 +135,8 @@ export default {
 </script>
 
 <style>
-.disabled .el-upload--picture-card{
-display: none;
+.disabled .el-upload--picture-card {
+    display: none
 }
+
 </style>
