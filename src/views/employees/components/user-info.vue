@@ -371,7 +371,13 @@ export default {
       }
     },
     async saveUser() {
-      await saveUserDetailById(this.userInfo)
+      const fileList = this.$refs.staffPhoto.fileList
+      if (fileList.some(item => !item.upload)) {
+        // 表示此时还有图片没上传完成
+        this.$message('还有图片未上传完成')
+        return
+      }
+      await saveUserDetailById({ ...this.userInfo, staffPhoto: fileList && fileList.length ? fileList[0].url : ' ' })
       this.$message.success('保存用户基本信息成功')
     },
     async getPersonalDetail() {
@@ -381,7 +387,13 @@ export default {
       }
     },
     async savePersonal() {
-      await updatePersonal({ ...this.formData, id: this.userId })
+      const fileList = this.$refs.myStaffPhoto.fileList
+      if (fileList.some(item => !item.upload)) {
+        // 表示此时还有图片没上传完成
+        this.$message('还有图片未上传完成')
+        return
+      }
+      await updatePersonal({ ...this.formData, id: this.userId, staffPhoto: fileList && fileList.length ? fileList[0].url : ' ' })
       this.$message.success('保存用户基础信息成功')
     }
   }
