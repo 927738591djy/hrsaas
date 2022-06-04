@@ -11,13 +11,14 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
-
+import checkPermission from './mixin/checkPermission'
 import '@/icons' // icon
 import '@/permission' // permission control
 import * as directives from '@/directives'
 import Component from '@/components'
 import * as filters from '@/filters'
 
+Vue.mixin(checkPermission)
 // 注册自定义指令
 // 遍历所有的导出的指令对象 完成自定义全局注册
 Object.keys(directives).forEach(key => {
