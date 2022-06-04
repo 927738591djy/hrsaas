@@ -27,6 +27,7 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="个人详情">
+
             <!-- <UserInfo /> -->
             <!-- vue.js中内置了一个组件components泛义组件可以是任何组件 -->
             <!-- 在以上代码中，我们使用了动态组件**component**，它通过 **`is`**属性来绑定需要显示在该位置的组件

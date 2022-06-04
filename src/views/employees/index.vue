@@ -56,7 +56,7 @@
             <el-button type="text" size="small">转正</el-button>
             <el-button type="text" size="small">调岗</el-button>
             <el-button type="text" size="small">离职</el-button>
-            <el-button type="text" size="small">角色</el-button>
+            <el-button type="text" size="small" @click="editRole(row.id)">角色</el-button>
             <el-button
               type="text"
               size="small"
@@ -83,6 +83,7 @@
         <canvas ref="myCanvas" />
       </el-row>
     </el-dialog>
+    <AssignRole ref="AssignRole" :show-role-dialog.sync="showRoleDialog" :user-id="userId" />
   </div>
 </template>
 
@@ -92,10 +93,11 @@ import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对�
 import AddDemployee from './components/add-employee'
 import { formatDate } from '@/filters'
 import QrCode from 'qrcode'
+import AssignRole from '@/views/employees/components/assign-role.vue'
 
 export default {
   components: {
-    AddDemployee
+    AddDemployee, AssignRole
   },
   data() {
     return {
@@ -107,7 +109,9 @@ export default {
       },
       loading: false,
       showDialog: false, // 新增员工弹出层
-      showCodeDialog: false // 展示二维码
+      showCodeDialog: false, // 展示二维码
+      showRoleDialog: false,
+      userId: null
     }
   },
   created() {
@@ -216,6 +220,11 @@ export default {
       } else {
         this.$message.warning('当前员工头像为空')
       }
+    },
+    async editRole(id) {
+      this.userId = id
+      await this.$refs.AssignRole.getUserDetailById(id)
+      this.showRoleDialog = true
     }
   }
 }
