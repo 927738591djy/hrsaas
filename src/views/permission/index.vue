@@ -114,6 +114,7 @@ export default {
     async getPermissionList() {
       // this.list = await getPermissionList()
       this.list = tranListToTreeData(await getPermissionList(), '0')
+      // console.log(tranListToTreeData(await getPermissionList(), '0'))
     },
     // 删除权限点
     async delpermission(id) {
@@ -133,19 +134,16 @@ export default {
       this.showDialog = true
     },
     btnOk() {
-      this.$refs.permform
-        .validate()
-        .then(() => {
-          if (this.formData.id) {
-            return updatePermission(this.formData)
-          }
-          return addPermission(this.formData)
-        })
-        .then(() => {
-          this.$message.success('添加成功')
-          this.showDialog = false
-          this.getPermissionList()
-        })
+      this.$refs.permform.validate().then(() => {
+        if (this.formData.id) {
+          return updatePermission(this.formData)
+        }
+        return addPermission(this.formData)
+      }).then(() => {
+        this.$message.success('添加成功')
+        this.getPermissionList()
+        this.showDialog = false
+      })
     },
     btnCancel() {
       this.showDialog = false
