@@ -1,14 +1,10 @@
 import request from '@/utils/request'
 
-/**
- *  获取员工的简单列表
- * **/
-export function getEmployeeSimplet() {
+export function getEmployeeSimple() {
   return request({
     url: '/sys/user/simple'
   })
 }
-
 /**
  * 获取员工的综合列表数据
  * ***/
@@ -18,33 +14,26 @@ export function getEmployeeList(params) {
     params
   })
 }
-
 /**
- * 删除员工接口
- * ****/
-
+ * 删除员工
+ * ***/
 export function delEmployee(id) {
   return request({
     url: `/sys/user/${id}`,
     method: 'delete'
   })
 }
-
-/** **
- *  新增员工的接口
- * **/
+/*
+新增员工
+**/
 export function addEmployee(data) {
   return request({
-    method: 'post',
     url: '/sys/user',
+    method: 'post',
     data
   })
 }
-/** *
- *  封装一个导入员工的接口
- *
- * ***/
-
+/** ****批量导入员工接口 */
 export function importEmployee(data) {
   return request({
     url: '/sys/user/batch',
@@ -52,11 +41,9 @@ export function importEmployee(data) {
     data
   })
 }
-
-/** *
- *
- * 保存员工的基本信息
- * **/
+/**
+ *  保存员工的基本信息
+ * ***/
 export function saveUserDetailById(data) {
   return request({
     url: `/sys/user/${data.id}`,
@@ -105,7 +92,6 @@ export function updateJob(data) {
     data
   })
 }
-
 /** *
  * 给用户分配角色
  * ***/

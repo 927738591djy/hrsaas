@@ -52,7 +52,7 @@
         </el-table-column>
         <el-table-column label="操作" sortable="" fixed="right" width="280">
           <template slot-scope="{ row }">
-            <el-button type="text" size="small" :disabled="!checkPermission('POINT-USER-UPDATE')" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
+            <el-button type="text" size="small" :disabled="checkPermission('POINT-USER-UPDATE')" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
             <el-button type="text" size="small">转正</el-button>
             <el-button type="text" size="small">调岗</el-button>
             <el-button type="text" size="small">离职</el-button>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { getEmployeeList, delEmployee } from '@/api/employee'
+import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
 import AddDemployee from './components/add-employee'
 import { formatDate } from '@/filters'

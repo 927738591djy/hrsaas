@@ -89,7 +89,7 @@
 import { getDepartments } from '@/api/departments'
 import { tranListToTreeData } from '@/utils'
 import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
-import { addEmployee } from '@/api/employee'
+import { addEmployee } from '@/api/employees'
 
 export default {
   props: {

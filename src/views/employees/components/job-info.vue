@@ -160,7 +160,7 @@
 
 <script>
 import EmployeeEnum from '@/api/constant/employees'
-import { getJobDetail, getEmployeeSimplet, updateJob } from '@/api/employee'
+import { getJobDetail, getEmployeeSimple, updateJob } from '@/api/employees'
 
 export default {
   data() {
@@ -207,7 +207,7 @@ export default {
       this.formData = await getJobDetail(this.userId)
     },
     async getEmployeeSimplet() {
-      this.depts = await getEmployeeSimplet()
+      this.depts = await getEmployeeSimple()
     },
     async saveJob() {
       await updateJob(this.formData)

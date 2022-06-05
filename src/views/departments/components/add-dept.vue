@@ -66,7 +66,7 @@ import {
   getDepartDetail,
   updateDepartments
 } from '@/api/departments'
-import { getEmployeeSimplet } from '@/api/employee'
+import { getEmployeeSimplet } from '@/api/employees'
 
 export default {
   props: {

@@ -18,7 +18,7 @@
 <script>
 import { getRoleList } from '@/api/setting'
 import { getUserDetailById } from '@/api/user'
-import { assignRoles } from '@/api/employee'
+import { assignRoles } from '@/api/employees'
 
 export default {
   props: {
