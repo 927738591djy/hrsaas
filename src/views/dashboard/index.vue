@@ -72,10 +72,10 @@
             <span>流程申请</span>
           </div>
           <div class="sideNav">
-            <el-button class="sideBtn">加班离职</el-button>
+            <el-button class="sideBtn" @click="showDialog = true">加班离职</el-button>
             <el-button class="sideBtn">请假调休</el-button>
-            <el-button class="sideBtn">审批列表</el-button>
-            <el-button class="sideBtn">我的信息</el-button>
+            <el-button class="sideBtn" @click="$router.push('/users/approvals')">审批列表</el-button>
+            <el-button class="sideBtn" @click="$router.push('/users/info')">我的信息</el-button>
           </div>
         </el-card>
 
@@ -117,6 +117,34 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <el-dialog :visible="showDialog" title="离职申请" @close="btnCancel">
+      <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="120px">
+        <el-form-item label="期望离职时间" prop="exceptTime">
+          <el-date-picker
+            v-model="ruleForm.exceptTime"
+            placeholder="选择日期时间"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width: 70%;"
+          />
+        </el-form-item>
+        <el-form-item label="离职原因" prop="reason">
+          <el-input
+            v-model="ruleForm.reason"
+            type="textarea"
+            style="width: 70%;"
+            placeholder="请输入内容"
+          />
+        </el-form-item>
+      </el-form>
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button type="primary" size="small" @click="btnOk">确定</el-button>
+          <el-button size="small" @click="btnCancel">取消</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -125,13 +153,47 @@ import { mapGetters, createNamespacedHelpers } from 'vuex'
 import WorkCalendar from '@/views/dashboard/components/work-calendar.vue'
 import Radar from '@/views/dashboard/components/radar.vue'
 const { mapState } = createNamespacedHelpers('user')
+import { startProcess } from '@/api/approvals'
 
 export default {
   name: 'Dashboard',
   components: { WorkCalendar, Radar },
   data() {
     return {
-      defaultImg: require('@/assets/common/head.jpg')
+      defaultImg: require('@/assets/common/head.jpg'),
+      showDialog: false,
+      ruleForm: {
+        exceptTime: '',
+        reason: '',
+        processKey: 'process_dimission', // 特定的审批
+        processName: '离职'
+      },
+      rules: {
+        exceptTime: [{ required: true, message: '离职时间不能为空' }],
+        reason: [{ required: true, message: '离职原因不能为空' }]
+      }
+    }
+  },
+  methods: {
+    btnOk() {
+      this.$refs.ruleForm.validate(async isOk => {
+        if (isOk) {
+          // 调用离职申请接口
+          await startProcess({ ...this.ruleForm, userId: this.userInfo.userId, username: this.userInfo.username })
+          this.$message.success('流程申请成功')
+          this.showDialog = false
+        }
+      })
+    },
+    btnCancel() {
+      this.ruleForm = {
+        exceptTime: '',
+        reason: '',
+        processKey: 'process_dimission', // 特定的审批
+        processName: '离职'
+      }
+      this.$refs.ruleForm.resetFields()
+      this.showDialog = false
     }
   },
   computed: {
