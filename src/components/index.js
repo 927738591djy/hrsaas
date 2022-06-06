@@ -4,6 +4,7 @@ import UploadExcel from '@/components/uploadExcel'
 import ImageUpload from '@/components/ImageUpload'
 import ScreenFull from '@/components/ScreenFull'
 import ThemePicker from './ThemePicker'
+import LangSelect from './lang'
 
 export default {
   install(Vue) {
@@ -13,5 +14,6 @@ export default {
     Vue.component('ImageUpload', ImageUpload)
     Vue.component('ScreenFull', ScreenFull)
     Vue.component('ThemePicker', ThemePicker)
+    Vue.component('LangSelect', LangSelect)
   }
 }

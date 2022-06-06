@@ -13,6 +13,8 @@
     <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
+      <!-- 对语言插件 -->
+      <LangSelect class="right-menu-item" />
       <theme-picker class="right-menu-item" />
       <!-- 防止全屏插件 -->
       <ScreenFull class="right-menu-item" />
