@@ -19,7 +19,7 @@
             <el-button
               v-if="row.type === 1"
               type="text"
-              @click="addPermission(2, '1')"
+              @click="addPermission(2, row.id)"
             >添加</el-button>
             <el-button
               type="text"

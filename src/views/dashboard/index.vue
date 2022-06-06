@@ -174,12 +174,18 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'name', 'staffPhoto'
+    ]),
+    ...mapState(['userInfo'])
+  },
   methods: {
     btnOk() {
-      this.$refs.ruleForm.validate(async isOk => {
-        if (isOk) {
+      this.$refs.ruleForm.validate(async isOK => {
+        if (isOK) {
           // 调用离职申请接口
-          await startProcess({ ...this.ruleForm, userId: this.userInfo.userId, username: this.userInfo.username })
+          await startProcess({ ...this.ruleForm, userId: this.userInfo.userId })
           this.$message.success('流程申请成功')
           this.showDialog = false
         }
@@ -195,12 +201,6 @@ export default {
       this.$refs.ruleForm.resetFields()
       this.showDialog = false
     }
-  },
-  computed: {
-    ...mapGetters([
-      'name', 'staffPhoto'
-    ]),
-    ...mapState(['userInfo'])
   }
 }
 </script>

@@ -158,12 +158,11 @@ import {
   deleteRole,
   getRoleDetail,
   updateRole,
-  addRole
+  addRole, assignPerm
 } from '@/api/setting'
 import { mapGetters } from 'vuex'
 import { tranListToTreeData } from '@/utils/index'
 import { getPermissionList } from '@/api/permission'
-import { assignPerm } from '@/api/setting'
 
 export default {
   data() {
@@ -190,8 +189,8 @@ export default {
       defaultprops: {
         label: 'name'
       },
-      roleId: '', // 角色id
-      selectCheck: []
+      roleId: null, // 角色id
+      selectCheck: [] // 用来接收当前角色所拥有的权限数据
     }
   },
   computed: {
@@ -260,13 +259,14 @@ export default {
     async assignPerms(id) {
       this.permData = tranListToTreeData(await getPermissionList(), '0')
       this.roleId = id // 记录当前角色的id
-      const { permIds } = await getRoleDetail(id)
+      const { permIds } = await getRoleDetail(id) // permIds就是当前点击的角色的权限数据
       // console.log(permIds)
       this.selectCheck = permIds
       this.showpermDialog = true
     },
     async btnpermOk() {
-      await assignPerm({ permIds: this.$refs.permTree.getCheckedKeys(true), id: this.roleId })
+      // console.log(this.$refs.permTree.getCheckedKeys()) // 得到的是一个字符串数组 数组中id的值
+      await assignPerm({ permIds: this.$refs.permTree.getCheckedKeys(), id: this.roleId })
       this.$message.success('分配权限成功')
       this.showpermDialog = false
     },

@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     handleNodeClick(data) {
-      console.log(data)
+      // console.log(data)
     },
     async getDepartments() {
       this.loading = true

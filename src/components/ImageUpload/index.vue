@@ -90,33 +90,34 @@ export default {
     },
     // 上传到腾讯云
     // 自定义上传动作
-    upload(params) {
+    upload(param) {
       // params中的file就是要上传的图片文件
     //   console.log(params.file)
-      if (params.file) {
+      if (param.file) {
         this.showPercent = true // 显示进度条
         //   上传对象到腾讯云
         cos.putObject({
           Bucket: 'liuyixiedaima-1312276636', /* 每个人的存储桶名称 */
           Region: 'ap-shanghai', /* 存储桶所在地域，必须字段 */
-          Key: params.file.name, /* 文件名称 */
+          Key: param.file.name, /* 文件名称 */
           StorageClass: 'STANDARD', // 固定值
-          Body: params.file, // 上传文件对象
+          Body: param.file, // 上传文件对象
           onProgress: (progressData) => {
             // console.log(progressData.percent * 100)
             this.percent = progressData.percent * 100
           }
         }, (err, data) => {
-          console.log(err)
+          console.log('错误' + err)
+          // console.log(data)
           if (data.statusCode === 200 && data.Location) {
             //   认为此时上传成功
             // 需要知道当前的这个地址是谁的url地址
-          //  params.file.uid  => 当前上传文件的标识  如果找到了一一样的uid 就表示他们是一张图片
+            //  param.file.uid  => 当前上传文件的标识  如果找到了一一样的uid 就表示他们是一张图片
             console.log(this.fileList)
             // 这样相当于将原来的旧本地地址换成了新地址
             this.fileList = this.fileList.map(item => {
               // 将本地的地址替换成线上已经放在腾讯云之后的地址
-              if (item.uid === params.file.uid) {
+              if (item.uid === param.file.uid) {
                 // upload 为true的意思是 表示这张图片 已经上传过了 已经不是本地图片了
                 return { url: 'http://' + data.Location, upload: true }
               }

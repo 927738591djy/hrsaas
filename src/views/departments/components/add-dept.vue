@@ -28,7 +28,7 @@
           v-model="formData.manager"
           style="width: 80%"
           placeholder="请选择"
-          @focus="getEmployeeSimplet"
+          @focus="getEmployeeSimple"
         >
           <el-option
             v-for="item in peoples"
@@ -66,7 +66,7 @@ import {
   getDepartDetail,
   updateDepartments
 } from '@/api/departments'
-import { getEmployeeSimplet } from '@/api/employees'
+import { getEmployeeSimple } from '@/api/employees'
 
 export default {
   props: {
@@ -168,8 +168,8 @@ export default {
     }
   },
   methods: {
-    async getEmployeeSimplet() {
-      this.peoples = await getEmployeeSimplet()
+    async getEmployeeSimple() {
+      this.peoples = await getEmployeeSimple()
     },
     btnOk() {
       this.$refs.deptForm.validate(async(isOk) => {
